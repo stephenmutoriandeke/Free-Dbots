@@ -1,48 +1,65 @@
-<xml xmlns="http://www.w3.org/1999/xhtml" collection="false">
+<block type="before_purchase" id="^quULY}e);LBrbLXNPym" deletable="false" x="0" y="832">
   <variables>
-    <variable type="" id="]oGV^TW+pyAyI~)S*^8n">Max Loss Amount</variable>
-    <variable type="" id=",`Y]gHZe/MA.H+HvjCT0">EMA-34</variable>
-    <variable type="" id="IuS7w^IfF%%reKqf6Qcq">Expected Profit</variable>
-    <variable type="" id="LmU[8ZH:2aZ)m-5^SQ#w">Initial Amount</variable>
-    <variable type="" id="DNib.B0%.tV1gRYu6!cy">EMA-13</variable>
-    <variable type="" id=".}isBXha4T:t(WP]tqFt">Win Amount</variable>
-  </variables>
-  <block type="trade" id="73vWdDagX-YhN)CtN.3D" x="0" y="0">
-    <field name="MARKET_LIST">synthetic_index</field>
-    <field name="SUBMARKET_LIST">random_index</field>
-    <field name="SYMBOL_LIST">R_100</field>
-    <field name="TRADETYPECAT_LIST">callput</field>
-    <field name="TRADETYPE_LIST">risefall</field>
-    <field name="TYPE_LIST">CALL</field>
-    <field name="CANDLEINTERVAL_LIST">60</field>
-    <field name="TIME_MACHINE_ENABLED">FALSE</field>
-    <field name="RESTARTONERROR">TRUE</field>
-    <statement name="INITIALIZATION">
-      <block type="variables_set" id="XDMYoip}{3uMJ$~,Wa(K">
-        <field name="VAR" id="]oGV^TW+pyAyI~)S*^8n" variabletype="">Max Loss Amount</field>
-        <value name="VALUE">
-          <block type="math_number" id="P!2=P_+S,MKLQTjA]xg(">
-            <field name="NUM">999</field>
-          </block>
-        </value>
+  <block type="before_purchase" id="^quULY}e);LBrbLXNPym" deletable="false" x="0" y="832">
+  <statement name="BEFOREPURCHASE_STACK">
+    <!-- ATR Calculation -->
+    <block type="atr_statement" id="calculateATR">
+      <value name="PERIOD">
+        <shadow type="math_number">
+          <field name="NUM">14</field>
+        </shadow>
+      </value>
+      <next>
+        <block type="variables_set" id="setATRValue">
+          <field name="VAR" id="atr_value">ATR</field>
+          <value name="VALUE">
+            <block type="variables_get">
+              <field name="VAR" id="atr_statement">ATR</field>
+            </block>
+          </value>
+        </block>
+      </next>
+    </block>
+    <!-- Volatility Filter -->
+    <block type="controls_if" id="checkVolatility">
+      <value name="IF0">
+        <block type="logic_compare" id="compareATR">
+          <field name="OP">GT</field>
+          <value name="A">
+            <block type="variables_get">
+              <field name="VAR" id="atr_value">ATR</field>
+            </block>
+          </value>
+          <value name="B">
+            <block type="math_number">
+              <field name="NUM">2.0</field> <!-- Set your ATR threshold here -->
+            </block>
+          </value>
+        </block>
+      </value>
+      <statement name="DO0">
+        <block type="notify" id="volatilityAlert">
+          <field name="NOTIFICATION_TYPE">warn</field>
+          <field name="NOTIFICATION_SOUND">silent</field>
+          <value name="MESSAGE">
+            <block type="text">
+              <field name="TEXT">High volatility detected. Stopping trade.</field>
+            </block>
+          </value>
+        </block>
         <next>
-          <block type="variables_set" id="dqduY+F]dYVC%/;)_QyX">
-            <field name="VAR" id="IuS7w^IfF%%reKqf6Qcq" variabletype="">Expected Profit</field>
-            <value name="VALUE">
-              <block type="math_number" id="pGL%0jCRlD;R_i-Q:?jz">
-                <field name="NUM">20</field>
-              </block>
-            </value>
-            <next>
-              <block type="variables_set" id="cG;6qVzC4dU[J9h%wYdK">
-                <field name="VAR" id=".}isBXha4T:t(WP]tqFt" variabletype="">Win Amount</field>
-                <value name="VALUE">
-                  <block type="math_number" id="?UMlJ9?s?=7*h-CIL?Hv">
-                    <field name="NUM">0.35</field>
-                  </block>
-                </value>
-                <next>
-                  <block type="variables_set" id="(GqO!$8|aP4T+(5lW(^E">
+          <block type="trade_stop" id="stopBotOnVolatility">
+            <!-- Stops the bot when high volatility is detected -->
+          </block>
+        </next>
+      </statement>
+    </block>
+    <!-- Continue with existing bot logic after the volatility check -->
+    <!-- Your existing logic for making purchases based on EMA, etc., goes here. -->
+         </block>
+        </next>
+      </statement>
+      <block type="variables_set" id="(GqO!$8|aP4T+(5lW(^E">
                     <field name="VAR" id="LmU[8ZH:2aZ)m-5^SQ#w" variabletype="">Initial Amount</field>
                     <value name="VALUE">
                       <block type="math_number" id="dI_3Be9-$EK_$F=d.7w#">
